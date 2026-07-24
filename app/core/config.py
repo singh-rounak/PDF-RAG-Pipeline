@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from qdrant_client.models import Field
 from func_tools import lru_cache
 
 class Settings(BaseSettings):
@@ -30,17 +31,42 @@ class Settings(BaseSettings):
     # ==========================
     #         Embedding model 
     # ==========================
+    Embedding_model_name: str = Field(default="sentence-transformers/all-MiniLM-L6-v2")
+
+
+    # ==========================
+    #          Qdrant 
+    # ==========================
     
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
-
-    ollama_url: str = "http://localhost:11434"
-
-    model_name: str = "phi3:mini"
-
     collection_name: str = "documents"
 
-    class Config:
-        env_file = ".env"
+    # ==========================
+    #          Uploads 
+    # ==========================
+    upload_dir: str = "uploads"
 
-settings = Settings()
+    # ==========================
+    #          Logging 
+    # ==========================
+    log_level: str = "INFO"
+
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        exit = "ignore"
+        )
+
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+    
+    # Returns a cached instance of the Settings class.
+    # This function ensures that the settings are loaded only once and reused across the application.
+    
