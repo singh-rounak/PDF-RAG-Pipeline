@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from qdrant_client.models import Field
-from func_tools import lru_cache
+from functools import lru_cache
 
 class Settings(BaseSettings):
     """
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # ==========================
     #         Embedding model 
     # ==========================
-    Embedding_model_name: str = Field(default="sentence-transformers/all-MiniLM-L6-v2")
+    embedding_model: str = Field(default="sentence-transformers/all-MiniLM-L6-v2")
 
 
     # ==========================
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
-    collection_name: str = "documents"
+    qdrant_collection: str = "documents"
     embedding_dimension: int = 384
 
     # ==========================

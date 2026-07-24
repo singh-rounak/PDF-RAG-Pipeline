@@ -11,7 +11,7 @@ class EmbeddingService:
         self.model = SentenceTransformer(self.model_name)
 
     # Generate an embedding for the given text
-    def get_embed(self, text: str)
+    def get_embed(self, text: str):
         return self.model.encode(text).tolist()
 
     def embed_documents(self, documents: list[str]):

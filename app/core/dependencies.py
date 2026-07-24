@@ -1,4 +1,4 @@
-from func_tools import lru_cache
+from functools import lru_cache
 
 from app.services.embedding_service import EmbeddingService
 from app.services.vector_store import VectorStore

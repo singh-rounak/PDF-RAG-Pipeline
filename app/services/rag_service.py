@@ -7,7 +7,7 @@ class RAGService:
 
     def answer(self, question: str):
         # Generate an embedding for the question using the embedding service
-        embedding = self.embedding_service.embed(question)
+        embedding = self.embedding_service.get_embed(question)
 
         # Search for relevant context in the vector store using the generated embedding
         context = self.vector_store.search(embedding)

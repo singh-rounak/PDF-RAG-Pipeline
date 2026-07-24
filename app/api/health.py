@@ -20,8 +20,8 @@ def health(
 ):
 
     return {
-        "status": "healthy",
+        "status": llm_service.health(),
         "embedding_model": embedding_service.model_name,
-        "vector_store": "connected",
+        "vector_store": vector_store.health(),
         "llm": llm_service.model,
     }
