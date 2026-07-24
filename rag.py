@@ -53,4 +53,3 @@ def answer(question):
     
     return answer
 
-print(answer("What is the main topic of the document?"))
