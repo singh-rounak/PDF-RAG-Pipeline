@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
     collection_name: str = "documents"
+    embedding_dimension: int = 384
 
     # ==========================
     #          Uploads 
