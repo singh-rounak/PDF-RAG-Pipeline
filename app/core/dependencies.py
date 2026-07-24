@@ -4,6 +4,7 @@ from app.services.embedding_service import EmbeddingService
 from app.services.vector_store import VectorStore
 from app.services.llm_service import LLMService
 from app.services.rag_service import RAGService
+from app.services.ingestion_service import IngestionService
 
 @lru_cache
 def get_embedding_service():
@@ -29,6 +30,16 @@ def get_llm_service():
     """
     return LLMService()
 
+@lru_cache
+def get_ingestion_service():
+    """
+    Returns a cached instance of the IngestionService.
+    This function ensures that the ingestion service is initialized only once and reused across the application.
+    """
+    return IngestionService(
+        embedding_service=get_embedding_service(),
+        vector_store=get_vector_store(),
+    )
 
 def get_rag_service():
     """

@@ -1,10 +1,27 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.core.dependencies import (
+    get_embedding_service,
+    get_llm_service,
+    get_vector_store
+)
 
 router = APIRouter()
 
-# fetch the health status of the API and its dependencies
-@router.get("/health")
-def health():
-    return {"status": "healthy",
-            "qdrant": "connected",
-            "ollama": "connected"}    
+
+@router.get(
+    "/health",
+    summary="Application health"
+)
+def health(
+    embedding_service=Depends(get_embedding_service),
+    vector_store=Depends(get_vector_store),
+    llm_service=Depends(get_llm_service)
+):
+
+    return {
+        "status": "healthy",
+        "embedding_model": embedding_service.model_name,
+        "vector_store": "connected",
+        "llm": llm_service.model,
+    }

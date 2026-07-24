@@ -1,59 +1,75 @@
 import os
 
-from app.api import uplaod
-from app.api import health
-from app.api import chat
-
 from fastapi import FastAPI
 from fastapi import UploadFile, File
+from fastapi.responses import JSONResponse
 
-from ingest import ingest_pdf
-from rag import answer
+from app.core.config import settings
+from app.core.logging import logger
+from app.core.exceptions import (VectorStoreException, LLMException, DocumentProcessingException)
+
+from app.api.upload import router as upload_router
+from app.api.chat import router as chat_router
+from app.api.health import router as health_router
 
 
 ## Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(
+    title=settings.app_name,
+    description="A RAG API for uploading Documents and asking questions.",
+    version=settings.app_version,
+    docs_url=f"/docs",
+    redoc_url=f"/redoc"
+)
 
+# -----------------------------
+# Register API Routers
+# -----------------------------
 app.include_router(
-    upload.router,
-    prefix="/api/v1"
+    upload_router,
+    prefix=settings.api_prefix,
+    tags=["Upload"],
 )
 
 app.include_router(
-    chat.router,
-    prefix="/api/v1"
+    chat_router,
+    prefix=settings.api_prefix,
+    tags=["Chat"],
 )
 
 app.include_router(
-    health.router,
-    prefix="/api/v1"
+    health_router,
+    prefix=settings.api_prefix,
+    tags=["Health"],
 )
 
-UPLOAD_DIR = "uploads"
-if not os.path.exists(UPLOAD_DIR):
-    os.makedirs(UPLOAD_DIR)
+## -----------------------------
+# Startup Event
+## -----------------------------
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info(f"{settings.app_name} started successfully.")
+
+# -----------------------------
+# Shutdown Event
+# -----------------------------
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info(f"{settings.app_name} shutting down.")
+
+
 
 ## Home route
-@app.get("/")
+@app.get("/", tags=["Home"])
 async def root():
-    return {"message": "Welcome to the RAG API. Use /upload/ to upload a PDF and /ask/ to ask a question."}
+    return {"application": settings.app_name, 
+            "version": settings.app_version, 
+            "environment": settings.environment,
+            "status": "running",
+            "docs": "/docs"}
 
-### Uploading the PDF file and ingesting it into Qdrant
-@app.post("/upload/")
-async def upload_file(file: UploadFile = File(...)):
-    file_location = os.path.join(UPLOAD_DIR, file.filename)
 
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
-    
-    num_chunks = ingest_pdf(file_location)
-    return {"message": f"File '{file.filename}' uploaded successfully with {num_chunks} chunks."}
-
-## Asking the question to the model
-@app.get("/ask/")
-async def ask_question(question: str):
-    response = answer(question)
-    return {"answer": response}
 
 # Exception handler 
 @app.exception_handler(VectorStoreException)
@@ -62,6 +78,32 @@ async def vector_exception(_, exc):
     return JSONResponse(
         status_code=503,
         content={
-            "detail": str(exc)
-        }
+            "success": False,
+            "error": str(exc)
+        },
+    )
+
+@app.exception_handler(LLMException)
+async def llm_exception_handler(request, exc):
+    logger.error(str(exc))
+
+    return JSONResponse(
+        status_code=503,
+        content={
+            "success": False,
+            "error": str(exc),
+        },
+    )
+
+
+@app.exception_handler(DocumentProcessingException)
+async def document_processing_exception_handler(request, exc):
+    logger.error(str(exc))
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": str(exc),
+        },
     )
