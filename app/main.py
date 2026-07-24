@@ -1,13 +1,33 @@
 import os
 
+from app.api import uplaod
+from app.api import health
+from app.api import chat
+
 from fastapi import FastAPI
 from fastapi import UploadFile, File
 
 from ingest import ingest_pdf
 from rag import answer
 
+
 ## Initialize FastAPI app
 app = FastAPI()
+
+app.include_router(
+    upload.router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    chat.router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    health.router,
+    prefix="/api/v1"
+)
 
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
@@ -34,3 +54,14 @@ async def upload_file(file: UploadFile = File(...)):
 async def ask_question(question: str):
     response = answer(question)
     return {"answer": response}
+
+# Exception handler 
+@app.exception_handler(VectorStoreException)
+async def vector_exception(_, exc):
+
+    return JSONResponse(
+        status_code=503,
+        content={
+            "detail": str(exc)
+        }
+    )
