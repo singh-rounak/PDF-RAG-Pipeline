@@ -8,16 +8,6 @@ from qdrant_client.models import (
     PointStruct
 )
 
-model = SentenceTransformer(
-    "sentence-transformers/all-MiniLM-L6-v2"
-)
-
-client= QdrantClient(
-    host="localhost",
-    port=6333
-)
-
-COLLECTION_NAME = "documents"
 
 def create_collection():
     collections = [ c.name for c in client.get_collections().collections ]
