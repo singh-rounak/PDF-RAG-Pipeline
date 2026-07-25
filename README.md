@@ -35,7 +35,7 @@ No external LLM API calls, no data leaving your infrastructure.
 ## 🏗️ Architecture
 
 <div align="center">
-  <img src="assets/architecture-diagram.png" alt="Architecture diagram" width="95%">
+  <img src="assets/architecture-diagram-parallel-branches.png" alt="Architecture diagram" width="95%">
 </div>
 
 | Stage | File | What it does |
