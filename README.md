@@ -187,7 +187,7 @@ curl -G "http://localhost:8000/ask/" \
 
 ## ⚠️ Known limitations
 
-Worth knowing before you deploy this as-is:
+Worth knowing before you deploy this as-is from my repo:
 
 - **Hardcoded hosts, not `config.py`.** `ingest.py` and `rag.py` currently instantiate `QdrantClient(host="localhost", port=6333)` and call Ollama at `http://localhost:11434/api/generate` directly, rather than importing `QDRANT_HOST` / `OLLAMA_URL` from `config.py`. This works when you run the FastAPI app **on the host** (outside Docker) against the Compose-published ports, but **fails if the `backend` container itself needs to reach `qdrant`/`ollama` by hostname**, since `localhost` inside a container refers to that container, not its neighbors.
   - **Fix for a fully containerized run:** point the clients at the Compose service names instead of `localhost`:
@@ -223,4 +223,4 @@ Issues and PRs are welcome — open one on the [repository](https://github.com/s
 
 ## 📄 License
 
-No `LICENSE` file is currently included in this repository. Add one (MIT is a common choice for a project like this) if you intend for others to reuse the code.
+No `LICENSE` 
