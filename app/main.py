@@ -12,6 +12,20 @@ from app.api.upload import router as upload_router
 from app.api.chat import router as chat_router
 from app.api.health import router as health_router
 
+from app.core.exceptions import (
+    DocumentProcessingException,
+    EmbeddingException,
+    VectorStoreException,
+    LLMException,
+    RetrievalException,
+    document_exception_handler,
+    embedding_exception_handler,
+    vectorstore_exception_handler,
+    llm_exception_handler,
+    retrieval_exception_handler,
+    generic_exception_handler,
+)
+
 
 ## Initialize FastAPI app
 app = FastAPI(
@@ -72,38 +86,32 @@ async def root():
 
 
 # Exception handler 
-@app.exception_handler(VectorStoreException)
-async def vector_exception(_, exc):
+app.add_exception_handler(
+    DocumentProcessingException,
+    document_exception_handler,
+)
 
-    return JSONResponse(
-        status_code=503,
-        content={
-            "success": False,
-            "error": str(exc)
-        },
-    )
+app.add_exception_handler(
+    EmbeddingException,
+    embedding_exception_handler,
+)
 
-@app.exception_handler(LLMException)
-async def llm_exception_handler(request, exc):
-    logger.error(str(exc))
+app.add_exception_handler(
+    VectorStoreException,
+    vectorstore_exception_handler,
+)
 
-    return JSONResponse(
-        status_code=503,
-        content={
-            "success": False,
-            "error": str(exc),
-        },
-    )
+app.add_exception_handler(
+    LLMException,
+    llm_exception_handler,
+)
 
+app.add_exception_handler(
+    RetrievalException,
+    retrieval_exception_handler,
+)
 
-@app.exception_handler(DocumentProcessingException)
-async def document_processing_exception_handler(request, exc):
-    logger.error(str(exc))
-
-    return JSONResponse(
-        status_code=500,
-        content={
-            "success": False,
-            "error": str(exc),
-        },
-    )
+app.add_exception_handler(
+    Exception,
+    generic_exception_handler,
+)
