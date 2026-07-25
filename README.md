@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 Enterprise Multimodal RAG Pipeline
+# 🧠 PDF based RAG Pipeline
 
 ### A self-hosted PDF Retrieval-Augmented Generation service
 
