@@ -219,8 +219,4 @@ Worth knowing before you deploy this as-is:
 
 Issues and PRs are welcome — open one on the [repository](https://github.com/singh-rounak/Enterprise-Multimodal-RAG-Pipeline).
 
----
 
-## 📄 License
-
-No `LICENSE` file is currently included in this repository. Add one (MIT is a common choice for a project like this) if you intend for others to reuse the code.
